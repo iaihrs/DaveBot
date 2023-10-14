@@ -37,7 +37,6 @@ def saveToFile(obj, filename):
 @client.event
 async def on_ready():
         channel = client.get_channel(1158337551367680100)
-        await channel.send("*DaveBot is ONLINE*💀💀💀")
         await client.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name="#" + CHANNEL_NAME))
 
 #remove reactions
@@ -63,7 +62,7 @@ async def on_message(message):
                         await message.add_reaction(em)
 
 #.trust command stuff
-        if message.content[:7] == '.trust ' and str(message.author.id) in trustedUsers and trustUsername not in trustedUsers:
+        if message.content[:7] == '.trust ' and ((str(message.author.id) in trustedUsers and trustUsername not in trustedUsers) or trustedUsers == []):
                 if message.content[8] == '@':
                         trustedUsers.append(trustUsername)
                         await message.channel.send(f"<@{trustUsername}> was added to the trusted user list.")
@@ -79,7 +78,7 @@ async def on_message(message):
                         await message.channel.send("usage: `.untrust @DiscordUsername`")
 
 #.whitelist add command stuff
-        if message.content[:15] == '.whitelist add ' and str(message.author.id) in trustedUsers and message.content.split()[2] not in whitelistedUsers:
+        if message.content[:15] == '.whitelist add ' and str(message.author.id) in trustedUsers and message.content.split()[2].lower() not in whitelistedUsers:
                 if message.content[16] != '@':
                         whitelistedUsers.append(message.content.split()[2].lower())
                         await message.channel.send(f"{message.content.split()[2]} was added to the whitelist.")
@@ -87,7 +86,7 @@ async def on_message(message):
                         await message.channel.send("usage: `whitelist add WikiUsername`")
 
 #whitelist remove command stuff
-        if message.content[:18] == '.whitelist remove ' and str(message.author.id) in trustedUsers and message.content.split()[2] in whitelistedUsers:
+        if message.content[:18] == '.whitelist remove ' and str(message.author.id) in trustedUsers and message.content.split()[2].lower() in whitelistedUsers:
                 if message.content[19] != '@':
                         whitelistedUsers.remove(message.content.split()[2].lower())
                         await message.channel.send(f"{message.content.split()[2]} was removed from the whitelist.")
@@ -121,3 +120,4 @@ except Exception as e:
         print(e)
 finally:
         saveToFile(trustedUsers, 'trustedUsers.json')
+        saveToFile(whitelistedUsers, 'whitelist.json')
