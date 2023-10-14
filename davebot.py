@@ -11,6 +11,7 @@ intents = discord.Intents.all()
 with open("info.txt", "r") as f:
         TOKEN = f.readline().rstrip()
         CHANNEL_ID = int(f.readline().rstrip())
+        CHANNEL_NAME = f.readline().rstrip()
         WEBHOOK_ID = int(f.readline().rstrip())
         BOT_USER_ID = int(f.readline().rstrip())
         EMOJIS = f.readline().rstrip().split(",")
@@ -37,7 +38,7 @@ def saveToFile(obj, filename):
 async def on_ready():
         channel = client.get_channel(1158337551367680100)
         await channel.send("*DaveBot is ONLINE*💀💀💀")
-        await client.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name="#recent-changes"))
+        await client.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name="#" + CHANNEL_NAME))
 
 #remove reactions
 @client.event
@@ -49,10 +50,11 @@ async def on_reaction_add(reaction, user):
         if str(user.id) not in trustedUsers and user.id != BOT_USER_ID:
                 await reaction.remove(client.get_user(user.id))
 
-#waits for message, if the message is in the correct channel id and the webhook sent it checks for the username of the wiki user who made the edit and save it as username, then add these reactions
+#waits for message, if the message is in the correct channel id and the webhook sent it
+#check for the username of the wiki user who made the edit and save it as username, then add these reactions
 @client.event
 async def on_message(message):
-        username = message.content.split(']')[0][1:]
+        username = message.content.split(']')[0][1:].lower()
         trustUsername = ''.join(re.findall("[0-9]", message.content))
 
 #checks for right channel, checks that the user is the bot, adds the emojis
@@ -79,7 +81,7 @@ async def on_message(message):
 #.whitelist add command stuff
         if message.content[:15] == '.whitelist add ' and str(message.author.id) in trustedUsers and message.content.split()[2] not in whitelistedUsers:
                 if message.content[16] != '@':
-                        whitelistedUsers.append(message.content.split()[2])
+                        whitelistedUsers.append(message.content.split()[2].lower())
                         await message.channel.send(f"{message.content.split()[2]} was added to the whitelist.")
                 else:
                         await message.channel.send("usage: `whitelist add WikiUsername`")
@@ -87,7 +89,7 @@ async def on_message(message):
 #whitelist remove command stuff
         if message.content[:18] == '.whitelist remove ' and str(message.author.id) in trustedUsers and message.content.split()[2] in whitelistedUsers:
                 if message.content[19] != '@':
-                        whitelistedUsers.remove(message.content.split()[2])
+                        whitelistedUsers.remove(message.content.split()[2].lower())
                         await message.channel.send(f"{message.content.split()[2]} was removed from the whitelist.")
                 else:
                         await message.channel.send("usage: `whitelist remove WikiUsername`")
@@ -99,20 +101,14 @@ async def on_message(message):
 #.trusted command stuff
         if message.content[:8] == '.trusted':
                 if trustedUsers != []:
-                        trustedNameList = ''
-                        for tNames in range(len(trustedUsers)):
-                                trustedNameList += "`" + str(client.get_user(int(trustedUsers[tNames]))) + "`\n"
-                        await message.channel.send("**Trusted users: **\n" + trustedNameList)
+                        await message.channel.send("**Trusted Users:**\n`" + "`\n`".join([str(client.get_user(int(x))) for x in trustedUsers]) + "`")
                 else:
                         await message.channel.send("**There are no trusted users in this server**")
 
 #.whitelisted command stuff
         if message.content[:12] == '.whitelisted':
                 if whitelistedUsers != []:
-                        whitelistedNameList = ''
-                        for wNames in range(len(whitelistedUsers)):
-                                whitelistedNameList += "`" + whitelistedUsers[wNames] + "`\n"
-                        await message.channel.send("**Whitelisted users: **\n" + whitelistedNameList)
+                        await message.channel.send("**Whitelisted users: **\n`" + "`\n`".join(whitelistedUsers) + "`")
                 else:
                         await message.channel.send("**There are no whitelisted users in this server**")
 
@@ -125,4 +121,3 @@ except Exception as e:
         print(e)
 finally:
         saveToFile(trustedUsers, 'trustedUsers.json')
-        saveToFile(whitelistedUsers, 'whitelist.json')
