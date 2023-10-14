@@ -2,7 +2,6 @@
 import discord
 import re
 import json
-import requests
 from discord.ext import commands
 
 #perms
