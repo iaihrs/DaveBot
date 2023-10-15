@@ -37,6 +37,7 @@ def saveToFile(obj, filename):
 @client.event
 async def on_ready():
         channel = client.get_channel(1158337551367680100)
+#       await channel.send("*DaveBot is ONLINE*💀💀💀")
         await client.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name="#" + CHANNEL_NAME))
 
 #remove reactions
@@ -46,7 +47,7 @@ async def on_reaction_add(reaction, user):
                 for em in EMOJIS:
                         await reaction.message.remove_reaction(em, client.get_user(BOT_USER_ID))
 
-        if str(user.id) not in trustedUsers and user.id != BOT_USER_ID:
+        if str(user.id) not in trustedUsers and user.id != BOT_USER_ID and reaction.message.author == (WEBHOOK_ID):
                 await reaction.remove(client.get_user(user.id))
 
 #waits for message, if the message is in the correct channel id and the webhook sent it
