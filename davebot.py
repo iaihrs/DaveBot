@@ -37,7 +37,6 @@ def saveToFile(obj, filename):
 @client.event
 async def on_ready():
         channel = client.get_channel(1158337551367680100)
-#       await channel.send("*DaveBot is ONLINE*💀💀💀")
         await client.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name="#" + CHANNEL_NAME))
 
 #remove reactions
