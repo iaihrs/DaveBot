@@ -38,6 +38,7 @@ def saveToFile(obj, filename):
 async def on_ready():
         channel = client.get_channel(1158337551367680100)
         await client.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name="#" + CHANNEL_NAME))
+        print("DaveBot online")
 
 #remove reactions
 @client.event
@@ -46,7 +47,7 @@ async def on_reaction_add(reaction, user):
                 for em in EMOJIS:
                         await reaction.message.remove_reaction(em, client.get_user(BOT_USER_ID))
 
-        if str(user.id) not in trustedUsers and user.id != BOT_USER_ID and reaction.message.author == (WEBHOOK_ID):
+        if str(user.id) not in trustedUsers and user.id != BOT_USER_ID and reaction.message.author.id == (WEBHOOK_ID):
                 await reaction.remove(client.get_user(user.id))
 
 #waits for message, if the message is in the correct channel id and the webhook sent it
@@ -85,17 +86,13 @@ async def on_message(message):
                 else:
                         await message.channel.send("usage: `whitelist add WikiUsername`")
 
-#whitelist remove command stuff
+#.whitelist remove command stuff
         if message.content[:18] == '.whitelist remove ' and str(message.author.id) in trustedUsers and message.content.split()[2].lower() in whitelistedUsers:
                 if message.content[19] != '@':
                         whitelistedUsers.remove(message.content.split()[2].lower())
                         await message.channel.send(f"{message.content.split()[2]} was removed from the whitelist.")
                 else:
                         await message.channel.send("usage: `whitelist remove WikiUsername`")
-
-#.help command stuff
-        if message.content[:5] == '.help':
-                await message.channel.send("```.trust @DiscordName - adds user to the trusted list\n.untrust @DiscordName - removes user from the trusted list\n.whitelist add WikiUserName - adds user to the whitelist\n.whitelist remove WikiUserName - removes user from the whitelist\n.trusted - shows a list of all trusted users\n.whitelisted - shows a list of all whitelisted users\n.help - brings up this list of commands```")
 
 #.trusted command stuff
         if message.content[:8] == '.trusted':
@@ -110,6 +107,15 @@ async def on_message(message):
                         await message.channel.send("**Whitelisted users: **\n`" + "`\n`".join(whitelistedUsers) + "`")
                 else:
                         await message.channel.send("**There are no whitelisted users in this server**")
+
+#.purge command stuff
+        if message.content[:7] == '.purge ' and str(message.author.id) in trustedUsers:
+                number = int(''.join(re.findall('[0-9]', message.content)))
+                await message.channel.purge(limit=number+1)
+
+#.help command stuff
+        if message.content[:5] == '.help':
+                await message.channel.send("```.trust @DiscordName - adds user to the trusted list\n.untrust @DiscordName - removes user from the trusted list\n.whitelist add WikiUserName - adds user to the whitelist\n.whitelist remove WikiUserName - removes user from the whitelist\n.trusted - shows a list of all trusted users\n.whitelisted - shows a list of all whitelisted users\n.purge i - removes i messages\n.help - brings up this list of commands```")
 
 #run the bot, catch any errors and also save to the json files
 try:
