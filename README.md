@@ -11,7 +11,7 @@ Both trusted and whitelisted members can be viewed by using their respective com
 
 ## Installation
 - Make a [discord bot](https://discord.com/developers/applications).
-- Go to the OAuth2 tab and in redirects put `https://discordapp.com/oauth2/authorize?&client_id=[CLIENTID]&scope=bot` replacing CLIENTID with the Client ID found just above.
+- Go to the OAuth2 tab and in redirects put `https://discordapp.com/oauth2/authorize?&client_id=`CLIENTID`&scope=bot` replacing `CLIENTID` with the Client ID found just above.
 - Then go to the URL Generator tab within OAuth2 and add `bot`, `messages.read` and `applications.commands`, and then `Manage Messages` under bot permissions.
 - Select your redirect URL and use the Generated URL at the bottom of the page to add the bot to your server.
 - Enter the credentials into `info.txt`. (Channel and user IDs require developer mode to be enabled)
